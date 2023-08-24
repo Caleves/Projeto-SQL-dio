@@ -1,165 +1,165 @@
-CREATE DATABASE IF NOT EXISTS Oficina;
-USE Oficina;
+CREATE DATABASE IF NOT EXISTS Workshop;
+USE Workshop;
 
-DROP DATABASE Oficina;
+DROP DATABASE Workshop;
 
--- VEICULO
-CREATE TABLE Veiculo(
-	idVeiculo INT auto_increment PRIMARY KEY,
-    idRevisão INT,
-    Placa CHAR(7) NOT NULL,
-    CONSTRAINT placa_idVeiculo UNIQUE (idVeiculo, Placa)
+-- VEHICLE
+CREATE TABLE Vehicle (
+    idVehicle INT auto_increment PRIMARY KEY,
+    idRevision INT,
+    Plate CHAR(9) NOT NULL,
+    CONSTRAINT plate_idVehicle UNIQUE (idVehicle, Plate)
 );
 
-ALTER TABLE Veiculo ADD CONSTRAINT fk_eqp_mecanicos FOREIGN KEY (idVeiculo) REFERENCES EqpMecanico(idEqpMecanico),
-ADD CONSTRAINT fk_conserto FOREIGN KEY (idVeiculo) REFERENCES Conserto(idConserto),
-ADD CONSTRAINT fk_revisao FOREIGN KEY (idRevisão) REFERENCES Revisao(idRevisão);
+ALTER TABLE Vehicle ADD CONSTRAINT fk_mechanical_eqp FOREIGN KEY (idVehicle) REFERENCES MechanicalEquipment(idMechanicalEquipment),
+ADD CONSTRAINT fk_repair FOREIGN KEY (idVehicle) REFERENCES Repair(idRepair),
+ADD CONSTRAINT fk_revision FOREIGN KEY (idRevision) REFERENCES Revision(idRevision);
 
-DESC Veiculo;
+DESC Vehicle;
 
--- CLIENTES
-CREATE TABLE Clientes(
-	idClientes INT auto_increment PRIMARY KEY,
-    idVeiculo INT,
-    CONSTRAINT fk_veiculo FOREIGN KEY (idVeiculo) REFERENCES Veiculo(idVeiculo)
+-- CUSTOMERS
+CREATE TABLE Customers (
+    idCustomers INT auto_increment PRIMARY KEY,
+    idVehicle INT,
+    CONSTRAINT fk_vehicle FOREIGN KEY (idVehicle) REFERENCES Vehicle(idVehicle)
 );
 
-DESC Clientes;
+DESC Customers;
 
--- PESSOA FISICA
-CREATE TABLE PessoaFisica(
-	idPessoaFisica INT auto_increment PRIMARY KEY,
-    Nome VARCHAR(45) NOT NULL,
+-- INDIVIDUAL PERSON
+CREATE TABLE IndividualPerson (
+    idIndividualPerson INT auto_increment PRIMARY KEY,
+    Name VARCHAR(50) NOT NULL,
     CPF CHAR(11) NOT NULL,
-    Endereço VARCHAR(45),
-    Contato CHAR(11)
+    Address VARCHAR(50),
+    Contact CHAR(12)
 );
 
-ALTER TABLE PessoaFisica ADD CONSTRAINT unique_cpf_PessoaFisica UNIQUE (CPF);
+ALTER TABLE IndividualPerson ADD CONSTRAINT unique_cpf_IndividualPerson UNIQUE (CPF);
 
-ALTER TABLE PessoaFisica ADD CONSTRAINT fk_idClientes_pf FOREIGN KEY (idPessoaFisica) REFERENCES Clientes(idClientes),
-ADD CONSTRAINT fk_clinte_pf FOREIGN KEY (idClientePf) REFERENCES Clientes(idClientes),
-ADD CONSTRAINT fk_veiculo_pf FOREIGN KEY (idPessoaFisica) REFERENCES Veiculo(idVeiculo);
+ALTER TABLE IndividualPerson ADD CONSTRAINT fk_idCustomers_individual FOREIGN KEY (idIndividualPerson) REFERENCES Customers(idCustomers),
+ADD CONSTRAINT fk_customer_individual FOREIGN KEY (idCustomerIndividual) REFERENCES Customers(idCustomers),
+ADD CONSTRAINT fk_vehicle_individual FOREIGN KEY (idIndividualPerson) REFERENCES Vehicle(idVehicle);
 
-DESC PessoaFisica;
+DESC IndividualPerson;
 
--- PESSOA JURIDICA
-CREATE TABLE PessoaJuridica(
-	idPessoaJuridica INT auto_increment PRIMARY KEY,
-    RazaoSocial VARCHAR(45) NOT NULL,
-    CNPJ CHAR(15) NOT NULL,
-    Endereço VARCHAR(45),
-    Contato CHAR(11),
-    CONSTRAINT unique_cnpj_PessoaJuridica UNIQUE (CNPJ)
+-- LEGAL ENTITY
+CREATE TABLE LegalEntity (
+    idLegalEntity INT auto_increment PRIMARY KEY,
+    BusinessName VARCHAR(50) NOT NULL,
+    CNPJ CHAR(18) NOT NULL,
+    Address VARCHAR(50),
+    Contact CHAR(12),
+    CONSTRAINT unique_cnpj_LegalEntity UNIQUE (CNPJ)
 );
 
-ALTER TABLE PessoaJuridica ADD CONSTRAINT fk_clientes_pj FOREIGN KEY (idPessoaJuridica) REFERENCES Clientes(idClientes),
-ADD CONSTRAINT fk_veiculo_pj FOREIGN KEY (idPessoaJuridica) REFERENCES Veiculo(idVeiculo);
+ALTER TABLE LegalEntity ADD CONSTRAINT fk_customers_legal FOREIGN KEY (idLegalEntity) REFERENCES Customers(idCustomers),
+ADD CONSTRAINT fk_vehicle_legal FOREIGN KEY (idLegalEntity) REFERENCES Vehicle(idVehicle);
 
-DESC PessoaJuridica;
+DESC LegalEntity;
 
--- CONSERTO
-CREATE TABLE Conserto(
-	idConserto INT auto_increment PRIMARY KEY,
-    Descrição VARCHAR(45) NOT NULL
+-- REPAIR
+CREATE TABLE Repair (
+    idRepair INT auto_increment PRIMARY KEY,
+    Description VARCHAR(50) NOT NULL
 );
 
-DESC Conserto;
+DESC Repair;
 
--- REVISÃO
-CREATE TABLE Revisão(
-	idRevisão INT auto_increment PRIMARY KEY,
-    Descrição VARCHAR(45) NOT NULL
+-- REVISION
+CREATE TABLE Revision (
+    idRevision INT auto_increment PRIMARY KEY,
+    Description VARCHAR(50) NOT NULL
 );
 
-DESC Revisão;
+DESC Revision;
 
--- MECANICO
-CREATE TABLE Mecanico(
-	idMecanico INT auto_increment PRIMARY KEY,
-    Nome VARCHAR(45) NOT NULL,
-    Endereço VARCHAR(45) NOT NULL,
-    Especialidade VARCHAR(45) NOT NULL
+-- MECHANIC
+CREATE TABLE Mechanic (
+    idMechanic INT auto_increment PRIMARY KEY,
+    Name VARCHAR(50) NOT NULL,
+    Address VARCHAR(50) NOT NULL,
+    Specialty VARCHAR(50) NOT NULL
 );
 
-DESC Mecanico;
+DESC Mechanic;
 
--- EQUIPE MECÂNICOS
-CREATE TABLE EqpMecanicos(
-	idEqpMecanicos INT auto_increment PRIMARY KEY
+-- MECHANICAL EQUIPMENT TEAM
+CREATE TABLE MechanicalEquipment (
+    idMechanicalEquipment INT auto_increment PRIMARY KEY
 );
 
-ALTER TABLE EqpMecanicos ADD CONSTRAINT fk_Mecanico FOREIGN KEY (idEqpMecanicos) REFERENCES Mecanico(idMecanico);
-ALTER TABLE OdServiço ADD CONSTRAINT fk_OdServiço FOREIGN KEY (idOdServiço) REFERENCES OdServiço(idOdServiço);
+ALTER TABLE MechanicalEquipment ADD CONSTRAINT fk_Mechanic FOREIGN KEY (idMechanicalEquipment) REFERENCES Mechanic(idMechanic);
+ALTER TABLE WorkOrderService ADD CONSTRAINT fk_WorkOrderService FOREIGN KEY (idWorkOrderService) REFERENCES WorkOrderService(idWorkOrderService);
 
-DESC EqpMecanicos;
+DESC MechanicalEquipment;
 
--- ORDEM DE SERVIÇO
-CREATE TABLE OdServiço(
-	idOdServiço INT auto_increment PRIMARY KEY,
-    DataEmissão DATE,
-    ValorServiço FLOAT NOT NULL,
-    ValorPeça FLOAT NOT NULL,
-    ValorTotal FLOAT NOT NULL,
-    Status ENUM('AGUARDANDO', 'EM ANDAMENTO', 'CONCLUIDO', 'CANCELADO'),
-    DataConclusão DATE
+-- WORK ORDER SERVICE
+CREATE TABLE WorkOrderService (
+    idWorkOrderService INT auto_increment PRIMARY KEY,
+    EmissionDate DATE,
+    ServiceValue FLOAT NOT NULL,
+    PartValue FLOAT NOT NULL,
+    TotalValue FLOAT NOT NULL,
+    Status ENUM('AWAITING', 'IN PROGRESS', 'COMPLETED', 'CANCELLED'),
+    CompletionDate DATE
 );
 
-SELECT * FROM OdServiço ORDER BY DataEmissão;
-SELECT * FROM OdServiço ORDER BY ValorTotal;
-DESC OdServiço;
+SELECT * FROM WorkOrderService ORDER BY EmissionDate;
+SELECT * FROM WorkOrderService ORDER BY TotalValue;
+DESC WorkOrderService;
 
--- REFERENCIA DE PREÇOS
-CREATE TABLE ReferenciaPreços(
-	idReferenciaPreços INT auto_increment PRIMARY KEY,
-    CONSTRAINT fk_referencia_precos FOREIGN KEY (idReferenciaPreços) REFERENCES OdServiço(idOdServiço)
+-- PRICE REFERENCE
+CREATE TABLE PriceReference (
+    idPriceReference INT auto_increment PRIMARY KEY,
+    CONSTRAINT fk_price_reference FOREIGN KEY (idPriceReference) REFERENCES WorkOrderService(idWorkOrderService)
 );
 
-DESC ReferenciaPreços;
+DESC PriceReference;
 
--- AUTORIZAÇÃO CLIENTE
-CREATE TABLE Autorização(
-	idAutorização INT auto_increment PRIMARY KEY,
-	Autorizado BOOL DEFAULT FALSE,
-    CONSTRAINT fk_autorização_cliente FOREIGN KEY (idAutorização) REFERENCES Clientes(idClientes),
-    CONSTRAINT fk_autorização_veiculo FOREIGN KEY (idAutorização) REFERENCES Veiculo(idVeiculo),
-    CONSTRAINT fk_autorização_OdServiço FOREIGN KEY (idAutorização) REFERENCES OdServiço(idOdServiço)
+-- CUSTOMER AUTHORIZATION
+CREATE TABLE Authorization (
+    idAuthorization INT auto_increment PRIMARY KEY,
+    Authorized BOOL DEFAULT FALSE,
+    CONSTRAINT fk_authorization_customer FOREIGN KEY (idAuthorization) REFERENCES Customers(idCustomers),
+    CONSTRAINT fk_authorization_vehicle FOREIGN KEY (idAuthorization) REFERENCES Vehicle(idVehicle),
+    CONSTRAINT fk_authorization_workOrderService FOREIGN KEY (idAuthorization) REFERENCES WorkOrderService(idWorkOrderService)
 );
 
-DESC Autorização;
+DESC Authorization;
 
--- PEÇAS
-CREATE TABLE Pecas(
-	idPecas INT auto_increment PRIMARY KEY,
-    Descrição VARCHAR(45),
-    Valor FLOAT NOT NULL
+-- PARTS
+CREATE TABLE Parts (
+    idParts INT auto_increment PRIMARY KEY,
+    Description VARCHAR(50),
+    Value FLOAT NOT NULL
 );
 
-DESC Pecas;
+DESC Parts;
 
--- OS PEÇAS
-CREATE TABLE OsPecas(
-	idOsPecas INT auto_increment PRIMARY KEY,
-	CONSTRAINT fk_pecas FOREIGN KEY (idOsPecas) REFERENCES Pecas(idPecas),
-    CONSTRAINT fk_os_pecas FOREIGN KEY (idOsPecas) REFERENCES OdServiço(idOdServiço)
+-- WORK ORDER PARTS
+CREATE TABLE WorkOrderParts (
+    idWorkOrderParts INT auto_increment PRIMARY KEY,
+    CONSTRAINT fk_parts FOREIGN KEY (idWorkOrderParts) REFERENCES Parts(idParts),
+    CONSTRAINT fk_workOrder_parts FOREIGN KEY (idWorkOrderParts) REFERENCES WorkOrderService(idWorkOrderService)
 );
 
-DESC OsPecas;
+DESC WorkOrderParts;
 
--- SERVIÇOS
-CREATE TABLE Serviços(
-	idServiços INT auto_increment PRIMARY KEY,
-    Descrição VARCHAR(45),
-    Valor FLOAT NOT NULL
+-- SERVICES
+CREATE TABLE Services (
+    idServices INT auto_increment PRIMARY KEY,
+    Description VARCHAR(50),
+    Value FLOAT NOT NULL
 );
 
-DESC Serviços;
+DESC Services;
 
--- ORDEM DE SERVIÇO
-CREATE TABLE OdServiço(
-	idOdServiço INT auto_increment PRIMARY KEY,
-    CONSTRAINT fk_serviços FOREIGN KEY (idOdServiço) REFERENCES Serviços(idServiços),
-    CONSTRAINT fk_os_serviços FOREIGN KEY (idOdServiço) REFERENCES OdServiço(idOdServiço)
+-- WORK ORDER SERVICE
+CREATE TABLE WorkOrderService (
+    idWorkOrderService INT auto_increment PRIMARY KEY,
+    CONSTRAINT fk_services FOREIGN KEY (idWorkOrderService) REFERENCES Services(idServices),
+    CONSTRAINT fk_workOrder_services FOREIGN KEY (idWorkOrderService) REFERENCES WorkOrderService(idWorkOrderService)
 );
 
-DESC OdServiço;
+DESC WorkOrderService;
