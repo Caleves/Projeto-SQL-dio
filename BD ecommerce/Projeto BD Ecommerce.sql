@@ -1,145 +1,145 @@
 CREATE DATABASE Ecommerce;
 USE Ecommerce;
 
--- CLIENTE
-CREATE TABLE Cliente(
-	idCliente INT auto_increment PRIMARY KEY,
-    Nome VARCHAR(45),
-    Endereço VARCHAR(45),
+-- CUSTOMER
+CREATE TABLE Customer(
+	idCustomer INT auto_increment PRIMARY KEY,
+    Name VARCHAR(45),
+    Address VARCHAR(45),
 	CPF CHAR (11) NOT NULL,
     CNPJ VARCHAR(18),
-    CONSTRAINT unique_cpf_cliente UNIQUE (CPF),
-    CONSTRAINT unique_cnpj_cliente UNIQUE (CNPJ)
+    CONSTRAINT unique_cpf_customer UNIQUE (CPF),
+    CONSTRAINT unique_cnpj_customer UNIQUE (CNPJ)
     );
 
-DESC Cliente;
+DESC Customer;
 
--- PRODUTO
-CREATE TABLE Produto(
-	idProduto INT auto_increment PRIMARY KEY,
-    Categoria VARCHAR(45),
-    Descrição VARCHAR(45),
-	Valor FLOAT
+-- PRODUCT
+CREATE TABLE Product(
+	idProduct INT auto_increment PRIMARY KEY,
+    Category VARCHAR(50),
+    Description VARCHAR(50),
+	Value FLOAT
 );
 
-DESC Produto;
+DESC Product;
 
--- PAGAMENTO
-CREATE TABLE Pagamento(
-	idPagamento INT auto_increment PRIMARY KEY,
-    PagamentoCliente INT,
-    Cartão VARCHAR(45),
-    Bandeira VARCHAR(45),
-    Número VARCHAR(45),
-    CONSTRAINT fk_pagamento_cliente FOREIGN KEY (PagamentoCliente) REFERENCES Cliente(idCliente)
+-- PAYMENT
+CREATE TABLE Payment(
+	idPayment INT auto_increment PRIMARY KEY,
+    CustomerPayment INT,
+    Card VARCHAR(50),
+    Brand VARCHAR(50),
+    Number VARCHAR(50),
+    CONSTRAINT fk_payment_customer FOREIGN KEY (CustomerPayment) REFERENCES Customer(idCustomer)
 );
 
-DESC Pagamento;
+DESC Payment;
 
--- ENTREGA
-CREATE TABLE Entrega(
-	idEntrega INT auto_increment PRIMARY KEY,
-    StatusEntrega BOOL,
-    CodigoRastreio VARCHAR(45),
-    DataEntrega DATE
+-- DELIVERY
+CREATE TABLE Delivery(
+	idDelivery INT auto_increment PRIMARY KEY,
+    DeliveryStatus BOOL,
+    TrackingCode VARCHAR(50),
+    DeliveryDate DATE
 );
 
-DESC Entrega;
+DESC Delivery;
 
--- PEDIDO
-CREATE TABLE Pedido(
-	idPedido INT auto_increment PRIMARY KEY,
-    StatusPedido BOOL DEFAULT FALSE,
-    Frete FLOAT,
-    Descrição VARCHAR(45),
-    CONSTRAINT fk_entrega FOREIGN KEY (idPedido) REFERENCES Entrega(idEntrega)
+-- ORDER
+CREATE TABLE Order(
+	idOrder INT auto_increment PRIMARY KEY,
+    OrderStatus BOOL DEFAULT FALSE,
+    Shipping FLOAT,
+    Description VARCHAR(50),
+    CONSTRAINT fk_delivery FOREIGN KEY (idOrder) REFERENCES Delivery(idDelivery)
 );
 
-DESC Pedido;
+DESC Order;
 
--- ESTOQUE
-CREATE TABLE Estoque(
-	idEstoque INT auto_increment PRIMARY KEY,
-    Local VARCHAR(45)
+-- INVENTORY
+CREATE TABLE Inventory(
+	idInventory INT auto_increment PRIMARY KEY,
+    Location VARCHAR(50)
 );
 
-DESC Estoque;
+DESC Inventory;
 
--- PRODUTOS EM ETOQUE
-CREATE TABLE EstoqueProduto(
-	idProduto INT PRIMARY KEY,
-    idEstoqueProduto INT,
-    Quantidade FLOAT,
-    CONSTRAINT fk_estoque FOREIGN KEY (idProduto) REFERENCES Produto(idProduto),
-    CONSTRAINT fk_produto_estoque FOREIGN KEY (idEstoqueProduto) REFERENCES Estoque(idEstoque)
+-- PRODUCTS IN INVENTORY
+CREATE TABLE InventoryProduct(
+	idProduct INT PRIMARY KEY,
+    idInventoryProduct INT,
+    Quantity FLOAT,
+    CONSTRAINT fk_inventory FOREIGN KEY (idProduct) REFERENCES Product(idProduct),
+    CONSTRAINT fk_product_inventory FOREIGN KEY (idInventoryProduct) REFERENCES Inventory(idInventory)
 );
 
-DESC EstoqueProduto;
+DESC InventoryProduct;
 
--- FORNECEDOR PRINCIPAL
-CREATE TABLE Fornecedor(
-	idFornecedor INT auto_increment PRIMARY KEY,
-    RazãoSocial VARCHAR(45),
+-- MAIN SUPPLIER
+CREATE TABLE Supplier(
+	idSupplier INT auto_increment PRIMARY KEY,
+    BusinessName VARCHAR(45),
     CPF CHAR (11) NOT NULL,
     CNPJ VARCHAR(18),
-    CONSTRAINT unique_cpf_cliente UNIQUE (CPF),
-    CONSTRAINT unique_cnpj_cliente UNIQUE (CNPJ)
+    CONSTRAINT unique_cpf_supplier UNIQUE (CPF),
+    CONSTRAINT unique_cnpj_supplier UNIQUE (CNPJ)
 );
 
-DESC Fornecedor;
+DESC Supplier;
 
--- FORNECEDOR TERCEIRO
-CREATE TABLE Terceiro(
-	idTerceiro INT auto_increment PRIMARY KEY,
-	RazãoSocial VARCHAR(45),
-    Localização VARCHAR(45),
+-- THIRD-PARTY SUPPLIER
+CREATE TABLE ThirdParty(
+	idThirdParty INT auto_increment PRIMARY KEY,
+	BusinessName VARCHAR(50),
+    Location VARCHAR(50),
     CPF CHAR (11) NOT NULL,
     CNPJ VARCHAR(18),
-    CONSTRAINT unique_cpf_cliente UNIQUE (CPF),
-    CONSTRAINT unique_cnpj_cliente UNIQUE (CNPJ)
+    CONSTRAINT unique_cpf_thirdparty UNIQUE (CPF),
+    CONSTRAINT unique_cnpj_thirdparty UNIQUE (CNPJ)
 );
 
-DESC Terceiro;
+DESC ThirdParty;
 
--- PEDIDO DE PRODUTO
-CREATE TABLE PedidoProduto(
-	idPedido INT,
-    idProduto INT,
-    Quantidade FLOAT DEFAULT 1,
-    CONSTRAINT fk_pedido FOREIGN KEY (idPedido) REFERENCES Terceiro(idTerceiro),
-    CONSTRAINT fk_produto FOREIGN KEY (idProduto) REFERENCES Produto(idProduto)
+-- PRODUCT ORDER
+CREATE TABLE ProductOrder(
+	idOrder INT,
+    idProduct INT,
+    Quantity FLOAT DEFAULT 1,
+    CONSTRAINT fk_order FOREIGN KEY (idOrder) REFERENCES ThirdParty(idThirdParty),
+    CONSTRAINT fk_product FOREIGN KEY (idProduct) REFERENCES Product(idProduct)
 );
 
-DESC PedidoProduto;
+DESC ProductOrder;
 
--- PEDIDO DE PRODUTO PARA FORNECEDOR PRINCIPAL
-CREATE TABLE PedidoFornecedor(
-	idCompraFornecedor INT,
-    idFornecedorPedido INT,
-    Quantidade FLOAT DEFAULT 1,
-    CONSTRAINT fk_pedido_forncedor FOREIGN KEY (idCompraFornecedor) REFERENCES Fornecedor(idFornecedor),
-    CONSTRAINT fk_fornecedor_pedido FOREIGN KEY (idFornecedorPedido) REFERENCES Pedido(idPedido)
+-- PRODUCT ORDER TO MAIN SUPPLIER
+CREATE TABLE SupplierOrder(
+	idSupplierPurchase INT,
+    idSupplierOrder INT,
+    Quantity FLOAT DEFAULT 1,
+    CONSTRAINT fk_supplier_purchase FOREIGN KEY (idSupplierPurchase) REFERENCES Supplier(idSupplier),
+    CONSTRAINT fk_supplier_order FOREIGN KEY (idSupplierOrder) REFERENCES Order(idOrder)
 );
 
-DESC PedidoFornecedor;
+DESC SupplierOrder;
 
--- PRODUTOS EM ESTOQUE FORNECEDOR PRINCIPAL (VERIFICA SE O FORNECEDOR TEM O PRODUTO QUE O CLIENTE DESEJA)
-CREATE TABLE EstoqueFornecedor(
-	idEstoqueFornecedor INT,
-    idProdutoFornecedor INT,
-    CONSTRAINT fk_estoque_fornecedor FOREIGN KEY (idEstoqueFornecedor) REFERENCES Fornecedor(idFornecedor),
-    CONSTRAINT fk_produtos_fornecedor FOREIGN KEY (idProdutoFornecedor) REFERENCES Produto(idProduto)
+-- PRODUCTS IN MAIN SUPPLIER INVENTORY 
+CREATE TABLE SupplierInventory(
+	idSupplierInventory INT,
+    idSupplierProduct INT,
+    CONSTRAINT fk_supplier_inventory FOREIGN KEY (idSupplierInventory) REFERENCES Supplier(idSupplier),
+    CONSTRAINT fk_products_supplier FOREIGN KEY (idSupplierProduct) REFERENCES Product(idProduct)
 );
 
-DESC EstoqueFornecedor;
+DESC SupplierInventory;
 
--- PRODUTOS EM ESTOQUE FORNECEDOR TERCEIRO (VERIFICA SE O FORNECEDOR TEM O PRODUTO QUE O CLIENTE DESEJA)
-
-CREATE TABLE EstoqueTerceiro(
-	idProdutosEstoque INT,
-    idPOFornecedor INT,
-    CONSTRAINT fk_produtos_estoque FOREIGN KEY (idProdutosEstoque) REFERENCES Produto(idProduto),
-    CONSTRAINT fk_po_fornecedor FOREIGN KEY (idPOFornecedor) REFERENCES Terceiro(idTerceiro)
+-- PRODUCTS IN THIRD-PARTY SUPPLIER INVENTORY 
+CREATE TABLE ThirdPartyInventory(
+	idProductsInventory INT,
+    idThirdPartyProduct INT,
+    CONSTRAINT fk_products_inventory FOREIGN KEY (idProductsInventory) REFERENCES Product(idProduct),
+    CONSTRAINT fk_thirdparty_order FOREIGN KEY (idThirdPartyProduct) REFERENCES ThirdParty(idThirdParty)
 );
 
-DESC EstoqueTerceiro;
+DESC ThirdPartyInventory;
+
